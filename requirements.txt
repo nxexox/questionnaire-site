@@ -1,0 +1,2 @@
+django==1.11
+graphene_django==1.3
