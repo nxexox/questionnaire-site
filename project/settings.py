@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'graphene_django',
 
     'apps.accounts',
-    'apps.quiz'
+    'apps.quiz',
+    'apps.utils'
 
 ]
 
@@ -60,6 +61,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'apps.quiz.middlewares.TestAccountMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'

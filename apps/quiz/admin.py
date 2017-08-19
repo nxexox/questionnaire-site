@@ -64,3 +64,26 @@ class AccountAdmin(admin.ModelAdmin):
     list_display = "name", "email", "information"
     search_fields = "name", "email", "information"
     filter_horizontal = "tests",
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+
+    def save_related(self, request, form, *args, **kwargs):
+        """ Создаем тесты """
+        super(AccountAdmin, self).save_related(request, form, *args, **kwargs)
+        obj = form.instance
+        tests_old = Test.objects.filter(account=obj)
+        old_tests_ids = set([i["id"] for i in tests_old.values("id")])
+        new_tests_ids = set([i["id"] for i in obj.tests.all().values("id")])
+
+        tests_delete_ids = old_tests_ids - new_tests_ids
+        tests_create_ids = new_tests_ids - old_tests_ids
+        tests_old.filter(pk__in=list(tests_delete_ids)).delete()
+
+        test_cases = TestCase.objects.filter(pk__in=tests_create_ids)
+
+        tests = [
+            Test(account=obj, test_case=test_cases.get(pk=i))
+            for i in tests_create_ids
+        ]
+        Test.objects.bulk_create(tests)

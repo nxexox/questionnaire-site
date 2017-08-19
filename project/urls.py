@@ -15,7 +15,20 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.conf import settings
+
+from graphene_django.views import GraphQLView
+
+from apps.quiz.graphql import schema
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r"^graph/", GraphQLView.as_view(schema=schema)),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += [
+        url(r"^graphiql/", GraphQLView.as_view(schema=schema, graphiql=True))
+    ]
